@@ -1,0 +1,24 @@
+# Bizz AI local infrastructure (Phase 1A).
+# PostgreSQL only. Backend/frontend run locally via uv/npm;
+# containerizing them is a later-phase decision, not a foundation need.
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: bizzai-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-bizzai}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bizzai}
+      POSTGRES_DB: ${POSTGRES_DB:-bizzai}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - bizzai-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bizzai} -d ${POSTGRES_DB:-bizzai}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  bizzai-postgres-data:

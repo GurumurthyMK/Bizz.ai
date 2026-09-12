@@ -1,0 +1,63 @@
+[project]
+name = "bizz-ai-backend"
+version = "0.1.0"
+description = "Bizz AI backend — FastAPI application layer (Phase 1A: project foundation)."
+readme = "README.md"
+requires-python = ">=3.11,<3.15"
+dependencies = [
+    "fastapi>=0.115,<0.120",
+    "uvicorn[standard]>=0.30,<0.36",
+    "pydantic>=2.7,<3.0",
+    "pydantic-settings>=2.3,<3.0",
+    "sqlalchemy>=2.0,<2.1",
+    "alembic>=1.13,<1.17",
+    "psycopg[binary]>=3.1,<3.3",
+    "bcrypt>=5.0.0",
+    "pyjwt>=2.8,<3.0",
+    "email-validator>=2.0",
+    "scikit-learn>=1.5,<1.8",
+    "httpx>=0.27,<0.29",
+    "python-multipart>=0.0.18,<0.0.20",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0,<9.0",
+    "ruff>=0.5,<0.14",
+    "mypy>=1.10,<2.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0,<9.0",
+    "ruff>=0.5,<0.14",
+    "mypy>=1.10,<2.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+# B008 is a false positive for FastAPI's documented `Depends` DI idiom.
+ignore = ["B008"]
+
+[tool.mypy]
+# 3.12: numpy 2.x stubs use `type` statements, which mypy cannot parse under
+# the 3.11 grammar. Runtime floor (>=3.11) is unchanged and still enforced by
+# ruff target-version.
+python_version = "3.12"
+strict = false
+ignore_missing_imports = true
+plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
