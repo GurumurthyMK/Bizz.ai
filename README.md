@@ -124,4 +124,4 @@ frontend - cd frontend
 backend - cd backend
           uv run uvicorn app.main:app --reload
 
-Database - docker compose -d pstgr                
+Database - docker compose up -d postgres                
