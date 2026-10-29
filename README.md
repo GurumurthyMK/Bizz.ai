@@ -3,8 +3,14 @@
 AI-powered business intelligence and predictive customer analytics platform.
 See `Product.md` for the product definition.
 
-> **Status: Phase 1A — project foundation only.** No business functionality
-> (auth, customers, analytics, ML, LLM, dashboard) is implemented yet.
+> **Status: complete MVP.** The full product is implemented: authentication,
+> deterministic demo dataset, analytics, ML (churn/purchase/segmentation/
+> opportunities), overview dashboard, customer/segment/prediction/opportunity
+> workflows, LLM intelligence layer (Gemini/Groq, optional), CSV import,
+> alerts, and reports.
+>
+> `Build_plan.md` and the phase structure are **historical planning records** —
+> not a to-do list. Do not re-implement anything described there.
 
 ## Repository layout
 
@@ -112,16 +118,32 @@ npm run build
 
 ## Docs
 
-- `Product.md` — product definition
+- `Product.md` — product definition (historical)
 - `Design.md` — design system & UX direction
-- `Architecture.md` — system architecture
-- `Build_plan.md` — phased execution plan
+- `Architecture.md` — system architecture (historical/reference)
+- `Build_plan.md` — phased execution plan (historical — do NOT re-implement)
+- `WINDOWS_DEPLOYMENT_GUIDE.md` — running Bizz AI on Windows
 
-# Run guide
-frontend - cd frontend
-           npm run dev
+## Run guide
 
-backend - cd backend
-          uv run uvicorn app.main:app --reload
+```bash
+# Terminal 1 — database (from repo root)
+docker compose up -d postgres
 
-Database - docker compose up -d postgres                
+# Terminal 2 — backend (from backend/)
+uv run uvicorn app.main:app --reload --port 8000
+
+# Terminal 3 — frontend (from frontend/)
+npm run dev
+```
+
+> **Important — dashboard reference date:** the Overview computes windows from
+> *today*, so the dataset anchor must be at/near the current date. If KPIs are
+> all flat zeros, re-seed and retrain with a fresh anchor:
+>
+> ```bash
+> cd backend
+> uv run python -m app.seed.run --reset --anchor <today: YYYY-MM-DD>
+> uv run python -m app.ml.train
+> ```
+> Then restart the backend.

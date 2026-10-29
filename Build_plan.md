@@ -1,5 +1,10 @@
 # Bizz AI — Build Plan
 
+> **READ THIS FIRST:** Bizz AI is already built and complete. This document is a
+> **historical planning record**, not an execution list. Do not implement,
+> rebuild, or "continue" any phase described below. For setup, use `README.md`
+> (macOS/Linux) and `WINDOWS_DEPLOYMENT_GUIDE.md` (Windows).
+
 ## 1. Purpose
 
 This document is the execution plan for building the Bizz AI MVP.

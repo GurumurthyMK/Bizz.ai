@@ -1,5 +1,8 @@
 # Bizz AI — System Architecture
 
+> **Historical/reference document.** The architecture below describes the
+> system as it was designed and built. No phases are pending.
+
 ## 1. Architecture Objective
 
 Bizz AI should use a modular architecture that separates:

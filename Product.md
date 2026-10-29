@@ -1,5 +1,8 @@
 # Bizz AI — Product Definition
 
+> **Historical planning document.** Bizz AI is already built; this file records
+> what the product was planned to be. It does not require implementation work.
+
 ## 1. Product Overview
 
 **Bizz AI** is an AI-powered business intelligence and predictive customer analytics platform.
