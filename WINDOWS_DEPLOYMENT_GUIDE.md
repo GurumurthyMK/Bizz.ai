@@ -120,15 +120,15 @@ uv run alembic upgrade head
 
 ### Step 6: Seed the demo dataset
 ```cmd
-uv run python -m app.seed.run --reset --anchor 2026-10-29
+uv run python -m app.seed.run --reset
 ```
 Expected: ~10,000 customers, 60+ products, 100,000+ transactions.
 
-> **IMPORTANT — why `--anchor` matters:** the Overview dashboard computes KPI
-> windows relative to *today*, while the default seed anchor is fixed at
-> `2026-09-01`. Seeding with the default anchor leaves zero transactions in the
-> "current" window → the Overview page renders empty/zeroed. Always pass an
-> anchor equal to (or a few days before) the current date, then retrain.
+> **Why this stays correct over time:** the seeder defaults its anchor to
+> *today* (UTC), matching the Overview dashboard, which computes KPI windows
+> from *now*. Data and dashboards therefore agree automatically. Pass
+> `--anchor YYYY-MM-DD` explicitly only when you need a byte-identical
+> reproduction of a specific dataset run.
 
 ### Step 7: Train ML models
 ```cmd
@@ -267,8 +267,8 @@ docker compose up -d postgres
 uv sync --group dev
 uv run alembic upgrade head
 
-:: Seed with anchor = current date, then retrain (CRITICAL — see 2.2 note)
-uv run python -m app.seed.run --reset --anchor 2026-10-29
+:: Seed demo data (anchor defaults to today) then retrain
+uv run python -m app.seed.run --reset
 uv run python -m app.ml.train
 uv run uvicorn app.main:app --reload --port 8000
 

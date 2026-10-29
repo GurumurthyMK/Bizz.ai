@@ -17,11 +17,22 @@ from datetime import UTC, date, datetime, time, timedelta
 from typing import Any
 
 
+def _default_anchor() -> date:
+    """Dataset "today" (UTC).
+
+    An explicitly passed anchor keeps datasets byte-reproducible. The dynamic
+    default exists because dashboards compute KPI windows from *now*: data
+    ending months in the past leaves the current window empty and zeroes the
+    Overview. Seed near the present, or pass a fixed anchor for reproducibility.
+    """
+    return datetime.now(UTC).date()
+
+
 @dataclass(frozen=True)
 class SeedConfig:
     seed: int = 42
     customers: int = 10000
-    anchor: date = date(2026, 9, 1)
+    anchor: date = field(default_factory=_default_anchor)
     history_days: int = 365
 
 

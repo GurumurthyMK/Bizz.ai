@@ -105,6 +105,7 @@ def build_ai_context(db: Session, kind: str, entity_id: int | None) -> dict[str,
     return ctx.opportunity_context(
         _round(
             {
+                "id": opportunity.id,
                 "type": opportunity.opportunity_type,
                 "score": opportunity.score,
                 "tier": opportunity.tier,

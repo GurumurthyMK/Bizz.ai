@@ -1,9 +1,10 @@
 """Demo-dataset CLI. Run from ``backend/`` with ``uv run``:
 
-``uv run python -m app.seed.run``               seed an empty database
+``uv run python -m app.seed.run``               seed an empty database (anchor = today)
 ``uv run python -m app.seed.run --reset``       replace the dataset explicitly
 ``uv run python -m app.seed.run --audit``       report on the current dataset
 ``uv run python -m app.seed.run --customers 500 --seed 7``  small custom run
+``uv run python -m app.seed.run --anchor 2026-06-01``       reproducible fixed-date run
 """
 
 from __future__ import annotations
@@ -35,8 +36,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--anchor",
         type=date.fromisoformat,
-        default=date(2026, 9, 1),
-        help="History window ends at this date (YYYY-MM-DD). Fixed default keeps reruns identical.",
+        default=None,
+        help="History window ends at this date (YYYY-MM-DD). Defaults to today "
+        "so dashboards anchored to 'now' show current data; pass a fixed date "
+        "for byte-identical reproductions.",
     )
     parser.add_argument(
         "--reset",
@@ -54,23 +57,24 @@ def main(argv: list[str] | None = None) -> int:
         print("error: --customers must be >= 1", file=sys.stderr)
         return 2
 
+    config_kwargs: dict[str, Any] = {"seed": args.seed, "customers": args.customers}
+    if args.anchor is not None:
+        config_kwargs["anchor"] = args.anchor
+    config = SeedConfig(**config_kwargs)
+
     db = SessionLocal()
     try:
         if args.audit:
             report: dict[str, Any] = {
-                "seed": args.seed,
-                "customers": args.customers,
-                "anchor": args.anchor.isoformat(),
+                "seed": config.seed,
+                "customers": config.customers,
+                "anchor": config.anchor.isoformat(),
                 "counts": table_counts(db),
                 "audit": audit_dataset(db),
             }
             _print_report(report)
             return 0
-        report = seed_dataset(
-            db,
-            SeedConfig(seed=args.seed, customers=args.customers, anchor=args.anchor),
-            reset=args.reset,
-        )
+        report = seed_dataset(db, config, reset=args.reset)
     except SeedError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2

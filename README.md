@@ -138,12 +138,14 @@ npm run dev
 ```
 
 > **Important — dashboard reference date:** the Overview computes windows from
-> *today*, so the dataset anchor must be at/near the current date. If KPIs are
-> all flat zeros, re-seed and retrain with a fresh anchor:
+> *today*, and the seeder now defaults its anchor to *today* as well, so data
+> and dashboards agree automatically. If KPIs are flat zeros because the
+> database predates this change, re-seed once and retrain:
 >
 > ```bash
 > cd backend
-> uv run python -m app.seed.run --reset --anchor <today: YYYY-MM-DD>
+> uv run python -m app.seed.run --reset
 > uv run python -m app.ml.train
 > ```
-> Then restart the backend.
+> Then restart the backend. (Pass `--anchor YYYY-MM-DD` only when you need a
+> byte-identical reproduction of a specific run.)

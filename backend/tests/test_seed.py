@@ -23,13 +23,33 @@ def db() -> Session:
 
 
 def _tiny(seed: int = 7) -> SeedConfig:
-    return SeedConfig(seed=seed, customers=100)
+    from datetime import date
+
+    # Pinned anchor: these tests assert byte-identical regeneration.
+    return SeedConfig(seed=seed, customers=100, anchor=date(2026, 9, 1))
 
 
 def test_generate_is_deterministic_for_same_triple() -> None:
     first = generate(_tiny())
     second = generate(_tiny())
     assert first == second
+
+
+def test_default_anchor_is_dynamic() -> None:
+    """Default anchor must track "today" so dashboards anchored to now show data.
+
+    Regresses the bug where the anchor was hardcoded to 2026-09-01: as real
+    time advanced past the anchor, the current KPI window emptied out and the
+    Overview rendered zeros. An explicitly passed anchor stays fixed.
+    """
+    from datetime import date
+
+    today = date.today()
+    default = SeedConfig().anchor
+    assert isinstance(default, date)
+    assert abs((today - default).days) <= 2  # UTC vs local clock drift tolerance
+    pinned = SeedConfig(seed=7, customers=100, anchor=date(2026, 6, 1))
+    assert pinned.anchor == date(2026, 6, 1)
 
 
 def test_generate_differs_by_seed_and_anchor() -> None:
